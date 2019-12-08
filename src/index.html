@@ -1,0 +1,29 @@
+<style>
+  table {
+    width: 100%;
+  }
+  td.size {
+    text-align: right;
+  }
+</style>
+
+<button id="open">
+  Open
+</button>
+<template id="ogg-info-tr">
+  <tr>
+    <td class="name"></td>
+    <td class="size"></td>
+    <td class="last-modified"></td>
+  </tr>
+</template>
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>size</th>
+    </tr>
+  </thead>
+  <tbody id="ogg-info-tbody"></tbody>
+</table>
+<script src="script.ts"></script>
