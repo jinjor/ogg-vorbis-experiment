@@ -30,16 +30,11 @@ class Model {
   async read(id: string) {
     const oggFile = this.oggFiles.get(id);
     const buffer = await (oggFile.file as any).arrayBuffer();
-    const dataView = new DataView(buffer);
-    const vorbis = new Vorbis();
-    const oggReader = new OggReader();
-    try {
-      oggReader.read(dataView, vorbis);
-      oggFile.vorbis = vorbis;
-    } catch (e) {
-      console.log(vorbis);
-      throw e;
-    }
+    const oggReader = new OggReader(() => new Vorbis());
+    oggReader.readPages(buffer);
+    const vorbis = Array.from(oggReader.streams.values()).map(
+      s => s.packetReader
+    )[0];
     console.log(oggFile.file.name, vorbis);
   }
 }
