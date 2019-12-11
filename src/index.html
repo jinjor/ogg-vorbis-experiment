@@ -10,20 +10,26 @@
 <button id="open">
   Open
 </button>
-<template id="ogg-info-tr">
+<template id="template-thead-tr">
+  <tr>
+    <th class="name">name</th>
+    <th class="size">size</th>
+  </tr>
+</template>
+<template id="template-thead-tr-th">
+  <th></th>
+</template>
+<template id="template-tbody-tr">
   <tr>
     <td class="name"></td>
     <td class="size"></td>
-    <td class="last-modified"></td>
   </tr>
 </template>
+<template id="template-tbody-tr-td">
+  <td></td>
+</template>
 <table>
-  <thead>
-    <tr>
-      <th>name</th>
-      <th>size</th>
-    </tr>
-  </thead>
+  <thead id="ogg-info-thead"></thead>
   <tbody id="ogg-info-tbody"></tbody>
 </table>
 <script src="script.ts"></script>

@@ -19,23 +19,39 @@ type OggFile = {
 
 class Model {
   private oggFiles: Map<string, OggFile> = new Map();
-  getOgg(id: string): OggFile {
+  getOggFiles(): OggFile[] {
+    return Array.from(this.oggFiles.values());
+  }
+  getOggFile(id: string): OggFile {
     return this.oggFiles.get(id);
   }
-  setOggs(oggs: OggFile[]) {
+  setOggFiles(oggs: OggFile[]) {
     for (let ogg of oggs) {
       this.oggFiles.set(ogg.id, ogg);
     }
   }
+  getCommentKeys(): string[] {
+    const keys = new Set<string>();
+    for (const { vorbis } of this.getOggFiles()) {
+      if (vorbis) {
+        const userCommentList = vorbis.userCommentList;
+        for (const key of Array.from(userCommentList.keys())) {
+          keys.add(key);
+        }
+      }
+    }
+    return Array.from(keys.values());
+  }
   async read(id: string) {
-    const oggFile = this.oggFiles.get(id);
+    const oggFile = this.getOggFile(id);
     const buffer = await (oggFile.file as any).arrayBuffer();
     const oggReader = new OggReader(() => new Vorbis());
     oggReader.readPages(buffer);
     const vorbis = Array.from(oggReader.streams.values()).map(
       s => s.packetReader
     )[0];
-    console.log(oggFile.file.name, vorbis);
+    oggFile.vorbis = vorbis;
+    console.log(vorbis);
   }
 }
 
@@ -56,34 +72,54 @@ open.addEventListener("click", async e => {
       });
     }
   }
-  model.setOggs(oggs);
-  renderTable(oggs);
+  model.setOggFiles(oggs);
+  renderTable();
   for (let ogg of oggs) {
     await model.read(ogg.id);
-    updateRow(ogg.id);
   }
+  renderTable();
 });
-function renderTable(oggFiles: OggFile[]) {
-  const tbody = document.getElementById("ogg-info-tbody");
-  for (let oggFile of oggFiles) {
-    insertRow(tbody, oggFile.id);
-  }
+function renderTable() {
+  renderHeader();
+  renderBody();
 }
 function cloneTemplate(templateId: string, selector: string): HTMLElement {
   const template = document.getElementById(templateId) as any;
   return document.importNode(template.content, true).querySelector(selector);
 }
-function insertRow(tbody: HTMLElement, id: string) {
-  const tr = cloneTemplate("ogg-info-tr", "tr");
-  tr.id = id;
-  tbody.appendChild(tr);
-  updateRow(id);
+function renderHeader() {
+  const thead = document.getElementById("ogg-info-thead");
+  const commentKeys = model.getCommentKeys();
+  const tr = cloneTemplate("template-thead-tr", "tr");
+  thead.innerHTML = "";
+  thead.appendChild(tr);
+  for (let key of commentKeys) {
+    const th = cloneTemplate("template-thead-tr-th", "th");
+    th.textContent = key;
+    tr.appendChild(th);
+  }
 }
-function updateRow(id: string) {
-  const ogg = model.getOgg(id);
-  const tr = document.getElementById(id);
-  tr.querySelector(".name").textContent = ogg.file.name;
-  tr.querySelector(".size").textContent = formatBytes(ogg.file.size);
+function renderBody() {
+  const commentKeys = model.getCommentKeys();
+  const tbody = document.getElementById("ogg-info-tbody");
+  tbody.innerHTML = "";
+  for (let oggFile of model.getOggFiles()) {
+    insertRow(commentKeys, tbody, oggFile.id);
+  }
+}
+function insertRow(commentKeys: string[], tbody: HTMLElement, id: string) {
+  const tr = cloneTemplate("template-tbody-tr", "tr");
+  const { file, vorbis } = model.getOggFile(id);
+  tr.querySelector(".name").textContent = file.name;
+  tr.querySelector(".size").textContent = formatBytes(file.size);
+  if (vorbis) {
+    for (let key of commentKeys) {
+      const td = cloneTemplate("template-tbody-tr-td", "td");
+      td.textContent = vorbis.userCommentList.get(key) || "";
+      tr.appendChild(td);
+    }
+  }
+  tbody.appendChild(tr);
 }
 function formatBytes(n: number): string {
   const units = "KMG";

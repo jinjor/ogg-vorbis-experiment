@@ -12,7 +12,7 @@ export class Vorbis implements PacketReader {
   blocksize1: number;
   // Comment header
   vendorString: string;
-  userCommentList: string[] = [];
+  userCommentList: Map<string, string> = new Map();
   // Setup header
   constructor() {}
   readPacket(buffer: ArrayBuffer): number {
@@ -70,7 +70,10 @@ export class Vorbis implements PacketReader {
       p += 4;
       const keyValue = new TextDecoder().decode(v.buffer.slice(p, p + length));
       p += length;
-      this.userCommentList.push(keyValue);
+      const i = keyValue.indexOf("=");
+      const key = keyValue.slice(0, i);
+      const value = keyValue.slice(i + 1);
+      this.userCommentList.set(key, value);
     }
     const framing_flag = v.getUint8(p++);
     if (framing_flag === 0) {
