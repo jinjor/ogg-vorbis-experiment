@@ -18,7 +18,7 @@ type OggFile = {
 };
 
 class Model {
-  private oggFiles: Map<string, OggFile> = new Map();
+  private oggFiles: Map<string, OggFile>;
   getOggFiles(): OggFile[] {
     return Array.from(this.oggFiles.values());
   }
@@ -26,6 +26,7 @@ class Model {
     return this.oggFiles.get(id);
   }
   setOggFiles(oggs: OggFile[]) {
+    this.oggFiles = new Map();
     for (let ogg of oggs) {
       this.oggFiles.set(ogg.id, ogg);
     }

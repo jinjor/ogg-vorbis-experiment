@@ -1,19 +1,38 @@
 <style>
+  body {
+    color: #333;
+  }
+  main {
+    max-width: 800px;
+  }
   table {
     width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin: 10px 0;
+  }
+  thead {
+    border-bottom: solid 1px #666;
+  }
+  tr:nth-child(even) {
+    background-color: #eee;
+  }
+  th,
+  td {
+    padding: 0 10px;
+    text-align: left;
+  }
+  .size {
+    width: 80px;
   }
   td.size {
     text-align: right;
   }
 </style>
-
-<button id="open">
-  Open
-</button>
 <template id="template-thead-tr">
   <tr>
-    <th class="name">name</th>
-    <th class="size">size</th>
+    <th class="name">Name</th>
+    <th class="size">Size</th>
   </tr>
 </template>
 <template id="template-thead-tr-th">
@@ -28,8 +47,13 @@
 <template id="template-tbody-tr-td">
   <td></td>
 </template>
-<table>
-  <thead id="ogg-info-thead"></thead>
-  <tbody id="ogg-info-tbody"></tbody>
-</table>
+<main>
+  <button id="open">
+    Open Directory
+  </button>
+  <table>
+    <thead id="ogg-info-thead"></thead>
+    <tbody id="ogg-info-tbody"></tbody>
+  </table>
+</main>
 <script src="script.ts"></script>
