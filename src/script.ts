@@ -129,5 +129,5 @@ function formatBytes(n: number): string {
     index++;
     n = n / 1000;
   }
-  return `${n.toFixed(2)}${units[index] || ""}B`;
+  return `${n.toFixed(2)} ${units[index] || ""}B`;
 }
